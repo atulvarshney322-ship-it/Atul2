@@ -1,13 +1,4 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
-
-$mail = new PHPMailer(true);
-
 if (isset($_POST['send'])) {
     // Collect form data
     $name    = $_POST['name'];
@@ -15,24 +6,37 @@ if (isset($_POST['send'])) {
     $subject = $_POST['subject'];
     $message = $_POST['message'];
 
-    try {
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'atulvarshney5577@gmail.com';
-    $mail->Password = 'Atulvarshney@5577#';
-    $mail->SMTPSecure = 'tls';
-    $mail->Port = 587;
+    // Receiver Email
+    $to = "your_email@example.com";  // 🔴 Replace with your email address
 
-    $mail->setFrom('atulvarshney5577@gmail.com', 'Mailer');
-    $mail->addAddress('atulvarshney5577@gmail.com');
-    $mail->Subject = 'Test Mail';
-    $mail->Body    = 'This is a test message.';
+    // Email Subject
+    $subject = "New Message from: $name - $subject";
 
-    $mail->send();
-    echo 'Mail sent successfully';
-} catch (Exception $e) {
-    echo "Mail sending failed. Error: {$mail->ErrorInfo}";
-}
+    // Email Body
+    $body = "
+    <html>
+    <head>
+      <title>Contact Form Message</title>
+    </head>
+    <body>
+      <h3>Contact Details</h3>
+      <p><strong>Name:</strong> {$name}</p>
+      <p><strong>Email:</strong> {$email}</p>
+      <p><strong>Message:</strong><br>{$message}</p>
+    </body>
+    </html>
+    ";
+
+    // Email Headers
+    $headers  = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= "From: {$name} <{$email}>" . "\r\n";
+
+    // Send Mail
+    if (mail($to, $subject, $body, $headers)) {
+        echo "<h2 style='color:green;'>Mail Sent Successfully!</h2>";
+    } else {
+        echo "<h2 style='color:red;'>Mail Sending Failed.</h2>";
+    }
 }
 ?>
